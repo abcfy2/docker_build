@@ -8,19 +8,23 @@ RUN echo 'deb http://mirror.bjtu.edu.cn/ubuntu/ precise-backports main multivers
 RUN echo 'deb http://mirror.bjtu.edu.cn/ubuntu/ precise-proposed main multiverse restricted universe' >> /etc/apt/sources.list
 RUN echo 'deb http://mirror.bjtu.edu.cn/ubuntu/ precise-security main multiverse restricted universe' >> /etc/apt/sources.list
 RUN echo 'deb http://mirror.bjtu.edu.cn/ubuntu/ precise-updates main multiverse restricted universe' >> /etc/apt/sources.list
+RUN echo 'Asia/Chongqing' > /etc/timezone
 RUN apt-get update
 RUN apt-get install wget language-pack-zh-hans -y
 
 #这部分安装openjdk7用{
-RUN apt-get install libfuse2
-RUN cd /tmp ; apt-get download fuse
-RUN cd /tmp ; dpkg-deb -x fuse_* .
-RUN cd /tmp ; dpkg-deb -e fuse_*
-RUN cd /tmp ; rm fuse_*.deb
-RUN cd /tmp ; echo -e '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
-RUN cd /tmp ; dpkg-deb -b . /fuse.deb
-RUN cd /tmp ; dpkg -i /fuse.deb
-RUN apt-get install -y openjdk-7-jdk
+# Fake a fuse install
+RUN export DEBIAN_FRONTEND=noninteractive; \
+apt-get install libfuse2; \
+cd /tmp ; apt-get download fuse; \
+cd /tmp ; dpkg-deb -x fuse_* .; \
+cd /tmp ; dpkg-deb -e fuse_*; \
+cd /tmp ; rm fuse_*.deb; \
+cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst; \
+cd /tmp ; dpkg-deb -b . /fuse.deb; \
+cd /tmp ; dpkg -i /fuse.deb;
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y openjdk-7-jdk;
 #}
 
 #初始化部分变量
@@ -29,7 +33,6 @@ ENV LANG zh_CN.UTF-8
 ENV LC_ALL zh_CN.UTF-8
 RUN echo 'LANG=zh_CN.UTF-8' > /etc/default/locale
 RUN echo 'LC_ALL=zh_CN.UTF-8' >> /etc/default/locale
-RUN echo 'Asia/Chongqing' > /etc/timezone
 
 #安装jenkins
 RUN wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | apt-key add -
@@ -41,14 +44,14 @@ RUN apt-get install jenkins -y
 RUN apt-get install -y mongodb
 
 #安装mysql
-RUN debconf-set-selections '<<<' 'mysql-server-5.1 mysql-server/root_password password root'
-RUN debconf-set-selections '<<<' 'mysql-server-5.1 mysql-server/root_password_again password root'
-RUN apt-get -y install mysql-server
+RUN echo 'mysql-server-5.5 mysql-server/root_password password root' | debconf-set-selections; \
+echo 'mysql-server-5.5 mysql-server/root_password_again password root' | debconf-set-selections; \
+apt-get -y install mysql-server;
 
 #这三个目录不提交
 VOLUME ["/var/lib/mysql", "/var/lib/mongodb", "/var/lib/jenkins"]
 
-#暴露22端口
+#暴露ssh端口和jenkins的ajp端口
 EXPOSE 8009 22
 
 #定义启动脚本
