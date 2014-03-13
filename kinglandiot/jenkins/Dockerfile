@@ -17,7 +17,7 @@ RUN cd /tmp ; apt-get download fuse
 RUN cd /tmp ; dpkg-deb -x fuse_* .
 RUN cd /tmp ; dpkg-deb -e fuse_*
 RUN cd /tmp ; rm fuse_*.deb
-RUN cd /tmp ; echo -en '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
+RUN cd /tmp ; echo -e '#!/bin/bash\nexit 0\n' > DEBIAN/postinst
 RUN cd /tmp ; dpkg-deb -b . /fuse.deb
 RUN cd /tmp ; dpkg -i /fuse.deb
 RUN apt-get install -y openjdk-7-jdk
@@ -41,8 +41,8 @@ RUN apt-get install jenkins -y
 RUN apt-get install -y mongodb
 
 #安装mysql
-RUN debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password password root'
-RUN debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password_again password root'
+RUN debconf-set-selections '<<<' 'mysql-server-5.1 mysql-server/root_password password root'
+RUN debconf-set-selections '<<<' 'mysql-server-5.1 mysql-server/root_password_again password root'
 RUN apt-get -y install mysql-server
 
 #这三个目录不提交
