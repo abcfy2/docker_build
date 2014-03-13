@@ -38,7 +38,7 @@ RUN echo 'LC_ALL=zh_CN.UTF-8' >> /etc/default/locale
 RUN wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | apt-key add -
 RUN echo 'deb http://pkg.jenkins-ci.org/debian binary/' > /etc/apt/sources.list.d/jenkins.list
 RUN apt-get update
-RUN apt-get install jenkins -y
+RUN DEBIAN_FRONTEND=noninteractive apt-get install jenkins -y
 
 #安装mongodb
 RUN apt-get install -y mongodb
@@ -47,6 +47,9 @@ RUN apt-get install -y mongodb
 RUN echo 'mysql-server-5.5 mysql-server/root_password password root' | debconf-set-selections; \
 echo 'mysql-server-5.5 mysql-server/root_password_again password root' | debconf-set-selections; \
 apt-get -y install mysql-server;
+
+#安装openssh-server
+RUN apt-get install -y openssh-server
 
 #这三个目录不提交
 VOLUME ["/var/lib/mysql", "/var/lib/mongodb", "/var/lib/jenkins"]
@@ -60,6 +63,7 @@ ADD start.sh /start.sh
 #修改服务配置
 ADD my.cnf /etc/mysql/my.cnf
 ADD jenkins /etc/default/jenkins
+RUN echo 'root:jenkins' | chpasswd
 
 #容器自启动脚本
 CMD ["/start.sh"]
