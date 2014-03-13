@@ -59,4 +59,7 @@ ADD start.sh /start.sh
 
 #修改服务配置
 ADD my.cnf /etc/mysql/my.cnf
+ADD jenkins /etc/default/jenkins
+
+#容器自启动脚本
 CMD ["/start.sh"]
