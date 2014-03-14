@@ -39,7 +39,7 @@ RUN wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | apt-key a
 RUN echo 'deb http://pkg.jenkins-ci.org/debian binary/' > /etc/apt/sources.list.d/jenkins.list
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install jenkins -y
-
+RUN apt-get autoremove -y ; apt-get clean
 #安装mongodb
 RUN apt-get install -y mongodb
 
