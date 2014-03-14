@@ -57,7 +57,7 @@ RUN apt-get install -y openssh-server
 VOLUME ["/var/lib/mysql", "/var/lib/mongodb", "/var/lib/jenkins"]
 
 #暴露ssh端口和jenkins的ajp端口
-EXPOSE 8009 22
+EXPOSE 8009 8080 22
 
 #定义启动脚本
 ADD start.sh /start.sh
