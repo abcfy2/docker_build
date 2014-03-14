@@ -12,6 +12,12 @@ RUN echo 'Asia/Chongqing' > /etc/timezone
 RUN apt-get update
 RUN apt-get install wget language-pack-zh-hans -y
 
+#更改语言环境
+ENV LANG zh_CN.UTF-8
+ENV LC_ALL zh_CN.UTF-8
+RUN echo 'LANG=zh_CN.UTF-8' > /etc/default/locale
+RUN echo 'LC_ALL=zh_CN.UTF-8' >> /etc/default/locale
+
 #这部分安装openjdk7用{
 # Fake a fuse install
 RUN export DEBIAN_FRONTEND=noninteractive; \
@@ -29,10 +35,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y openjdk-7-jdk;
 
 #初始化部分变量
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64/
-ENV LANG zh_CN.UTF-8
-ENV LC_ALL zh_CN.UTF-8
-RUN echo 'LANG=zh_CN.UTF-8' > /etc/default/locale
-RUN echo 'LC_ALL=zh_CN.UTF-8' >> /etc/default/locale
 
 #安装jenkins
 RUN wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | apt-key add -
