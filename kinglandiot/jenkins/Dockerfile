@@ -9,6 +9,7 @@ deb http://cn.archive.ubuntu.com/ubuntu/ precise-updates main restricted univers
 deb http://cn.archive.ubuntu.com/ubuntu/ precise-proposed main restricted universe multiverse\n \
 deb http://cn.archive.ubuntu.com/ubuntu/ precise-backports main restricted universe multiverse" > /etc/apt/sources.list
 RUN echo 'Asia/Shanghai' > /etc/timezone
+RUN dpkg-reconfigure --frontend noninteractive tzdata
 RUN apt-get update
 RUN apt-get install wget language-pack-zh-hans -y
 

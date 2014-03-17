@@ -9,6 +9,7 @@ deb http://cn.archive.ubuntu.com/ubuntu/ precise-updates main restricted univers
 deb http://cn.archive.ubuntu.com/ubuntu/ precise-proposed main restricted universe multiverse\n \
 deb http://cn.archive.ubuntu.com/ubuntu/ precise-backports main restricted universe multiverse" > /etc/apt/sources.list
 RUN echo 'Asia/Shanghai' > /etc/timezone
+RUN dpkg-reconfigure --frontend noninteractive tzdata
 RUN apt-get update
 RUN apt-get install language-pack-zh-hans -y
 
@@ -31,10 +32,10 @@ EXPOSE 3306
 ADD start.sh /start.sh
 
 #修改服务配置
-ADD my.cnf /etc/mysql/my.cnf
-RUN /usr/bin/mysqld_safe & \
-sleep 2; \
-mysql -u root -proot -e "GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION ; FLUSH PRIVILEGES"
+ADD my.cnf /etc/mysql/my.cnf 
+/usr/bin/mysqld_safe & \
+sleep 3; \
+mysql -u root -proot -e "GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION ; FLUSH PRIVILEGES" || cat /var/log/mysql/error.log
 
 #安装完毕后清理临时文件
 RUN apt-get autoremove -y ; apt-get clean
